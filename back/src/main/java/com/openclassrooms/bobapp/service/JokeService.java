@@ -12,6 +12,7 @@ import com.openclassrooms.bobapp.model.Joke;
 public class JokeService {
     
     private final JsonReader jsonReader;
+    private final Random generator = new Random();
 
     JokeService(JsonReader jsonReader) {
         this.jsonReader = jsonReader;
@@ -19,8 +20,7 @@ public class JokeService {
 
     public Joke getRandomJoke() {
         List<Joke> jokes = this.jsonReader.getJokes();
-        Random generator = new Random();
-        int randomIndex = generator.nextInt(jokes.size());
+        int randomIndex = this.generator.nextInt(jokes.size());
         return jokes.get(randomIndex);
     }
 }
