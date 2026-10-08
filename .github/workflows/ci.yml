@@ -46,6 +46,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Analyse SonarQube Cloud (back)
+        if: github.ref == 'refs/heads/main'  # plan gratuit : seule la branche principale est analysable
         uses: SonarSource/sonarqube-scan-action@v8
         with:
           projectBaseDir: back
@@ -90,11 +91,13 @@ jobs:
           if-no-files-found: warn
 
       - name: Installation de Node.js 20 (requis par l'analyseur Sonar)
+        if: github.ref == 'refs/heads/main'  # plan gratuit : seule la branche principale est analysable
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Analyse SonarQube Cloud (front)
+        if: github.ref == 'refs/heads/main'  # plan gratuit : seule la branche principale est analysable
         uses: SonarSource/sonarqube-scan-action@v8
         with:
           projectBaseDir: front
