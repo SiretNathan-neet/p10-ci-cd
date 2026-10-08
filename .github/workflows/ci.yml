@@ -1,7 +1,7 @@
-# Workflow CI — étape 1 : tests + rapports de couverture
+# Workflow CI — tests + rapports de couverture + qualité du code (SonarQube Cloud)
 # Déclenché sur chaque pull request vers main (validation obligatoire avant merge)
 # et sur chaque push sur main.
-name: CI - Tests & Coverage
+name: CI - Tests, Coverage & Quality
 
 on:
   pull_request:
@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # historique complet, requis par Sonar pour détecter le nouveau code
 
       - name: Installation de Java 11
         uses: actions/setup-java@v4
@@ -33,7 +35,7 @@ jobs:
           cache: maven
 
       - name: Lancement des tests (+ rapport JaCoCo)
-        run: mvn -B clean verify
+        run: mvn -B clean verify dependency:copy-dependencies
 
       - name: Publication du rapport de couverture back
         if: always()
@@ -42,6 +44,13 @@ jobs:
           name: backend-coverage-report
           path: back/target/site/jacoco/
           if-no-files-found: warn
+
+      - name: Analyse SonarQube Cloud (back)
+        uses: SonarSource/sonarqube-scan-action@v8
+        with:
+          projectBaseDir: back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # ---------------------------------------------------------------
   # Front-end : Angular 14 / Karma + Jasmine
@@ -56,6 +65,8 @@ jobs:
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # historique complet, requis par Sonar pour détecter le nouveau code
 
       - name: Installation de Node.js 16
         uses: actions/setup-node@v4
@@ -77,3 +88,15 @@ jobs:
           name: frontend-coverage-report
           path: front/coverage/bobapp/
           if-no-files-found: warn
+
+      - name: Installation de Node.js 20 (requis par l'analyseur Sonar)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Analyse SonarQube Cloud (front)
+        uses: SonarSource/sonarqube-scan-action@v8
+        with:
+          projectBaseDir: front
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
