@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +16,7 @@ import com.openclassrooms.bobapp.model.Joke;
 
 @Repository
 public class JsonReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonReader.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private JsonNode jsonFile;
 
@@ -21,7 +24,7 @@ public class JsonReader {
         try {
             this.getJsonFile();
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.error("Impossible de charger le fichier des blagues", e);
         }
     }
 
