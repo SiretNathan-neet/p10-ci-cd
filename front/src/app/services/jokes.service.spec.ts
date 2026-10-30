@@ -15,7 +15,7 @@ describe('JokesService', () => {
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(service).toBeFalsy(); //échec volontaire du test pour vérifier l'éfficacité de la github action
   });
 
 });
